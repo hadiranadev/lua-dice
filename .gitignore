@@ -1,0 +1,10 @@
+### .gitignore
+```gitignore
+# OS/editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+
+# Lua bytecode (if any)
+*.luac
