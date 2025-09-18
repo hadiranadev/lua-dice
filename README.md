@@ -59,7 +59,7 @@ Parts: +2d6 [4,6]=10 +1d20 [11]=11 +3
 Output Example (with flags):
 ```bash
 Roll 4d6+1d8-2 = 22
-Parts: +4d6 DL1 DH1 rr<=1 x1 explode@6 x3 [1,(6),4,6,6,3,5]=24 +1d8 DL1 DH1 explode@6 x1 [(6),5]=0 -2
+Parts: +4d6 DL1 DH1 rr<=1 x1 explode@6 x3 [(1),(6),4,6,6,3,5]=24 +1d8 DL1 DH1 explode@6 x1 [(6),(5)]=0 -2
 ```
 
 ---
