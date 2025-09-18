@@ -266,6 +266,14 @@ local function apply_adv_dis_single(m, roll_once, kind, times)
     return chosen
 end
 
+-- Helper Utility
+-- Iterates through dropped to get value frequencies.
+local function add_drops(accumlator, tble)
+    for _, v in ipairs(tble) do
+        accumlator[v] = (accumlator[v] or 0) + 1
+    end
+end
+
 -- Roll an expression with optional transforms
 -- 1. Tokenize -> 2. Parse -> 3. Roll (w or w/o adv/dis) -> 4. transforms (drop_lowest/drop_highest, reroll, explode)
 -- 5. Sum -> 6. Append -> 7. return total.
@@ -346,11 +354,20 @@ function Dice.roll(expression, options)
 
                 -- Drops: built-in dlN first then global drops
                 local kept, dropped = drop_lowest_values(rolls, term.drop_lowest or 0)
+
+                -- Get all dropped dice to annotate them all with ()
+                local dropped_all = {}
+                add_drops(dropped_all, dropped)
+
                 if options and options.drop_lowest and (tonumber(options.drop_lowest.count) or 0) > 0 then
-                    kept, dropped = drop_lowest_values(kept, tonumber(options.drop_lowest.count))
+                    local dropped2
+                    kept, dropped2 = drop_lowest_values(kept, tonumber(options.drop_lowest.count))
+                    add_drops(dropped_all, dropped2) -- dropped_all gets all dropped from dl
                 end
                 if options and options.drop_highest and (tonumber(options.drop_highest.count) or 0) > 0 then
-                    kept, dropped = drop_highest_values(kept, tonumber(options.drop_highest.count))
+                    local dropped3
+                    kept, dropped3 = drop_highest_values(kept, tonumber(options.drop_highest.count))
+                    add_drops(dropped_all, dropped3) -- dropped_all gets all dropped from dh
                 end
 
                 -- 5. Sum (kept values not dropped)
@@ -361,7 +378,8 @@ function Dice.roll(expression, options)
                 -- 6. Append
                 -- like kept logic but with formatting when added to list for printing later.
                local dropCount = {}
-                for _, v in ipairs(dropped) do dropCount[v] = (dropCount[v] or 0) + 1 end
+               -- comparing frequencies
+                for v, c in pairs(dropped_all) do dropCount[v] = c end
                 local annotated = {}
                 for _, v in ipairs(rolls) do
                     if dropCount[v] and dropCount[v] > 0 then
